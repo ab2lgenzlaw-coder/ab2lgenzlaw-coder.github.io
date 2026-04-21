@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>AB2L GenZ Law · Calendário</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand:#4B2ECC; --brand-light:#7C5CFC; --brand-glow:#9F7AFF;
+  --accent-bday:#FFB347; --success:#22C55E;
+  --bg:#0A0812; --bg2:#110d22; --bg3:#1a1436;
+  --surface:#1f1740; --surface2:#271e50;
+  --border:rgba(127,90,255,0.18); --border2:rgba(127,90,255,0.35);
+  --text:#F0ECFF; --text2:#A99FCC; --text3:#6B6090;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --r:16px; --r-sm:10px; --nav-h:68px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#000}
+body{font-family:var(--font);color:var(--text)}
+
+.phone{width:100%;max-width:390px;height:100dvh;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+@media(min-width:480px){
+  body{background:#050308;display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .phone{height:min(820px,95dvh);border-radius:44px;border:1px solid rgba(127,90,255,0.25);box-shadow:0 0 0 8px #0d0a1a,0 0 60px rgba(75,46,204,0.3)}
+}
+.phone::before{content:'';position:absolute;top:-80px;left:-40px;right:-40px;height:300px;background:radial-gradient(ellipse at 50% 0%,rgba(124,92,252,0.18) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* Header */
+.header{flex-shrink:0;padding:52px 20px 10px;position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between}
+.hdr-tag{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-glow);margin-bottom:2px}
+.hdr-title{font-size:22px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.logo{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-light));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;box-shadow:0 0 16px rgba(124,92,252,0.45)}
+
+/* View switcher (inside agenda tab) */
+.view-switcher{display:flex;gap:4px;padding:8px 20px 0;flex-shrink:0;position:relative;z-index:10}
+.vs-btn{flex:1;padding:6px 4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center}
+.vs-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* Scroll */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 20px calc(var(--nav-h)+16px);position:relative;z-index:5;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* Bottom nav */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:var(--nav-h);padding:8px 12px 20px;display:flex;gap:4px;background:linear-gradient(to top,var(--bg) 65%,transparent);z-index:20}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;background:none;border:none;cursor:pointer;color:var(--text3);font-family:var(--font);font-size:10px;font-weight:500;border-radius:var(--r-sm);position:relative;transition:color .2s}
+.nb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nb.active{color:var(--brand-glow)}
+.nb.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--brand-glow);border-radius:2px;box-shadow:0 0 8px var(--brand-glow)}
+
+/* Month nav */
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.month-label{font-size:16px;font-weight:600;color:var(--text)}
+.mn-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.mn-btn:hover{background:var(--surface2)}
+
+/* Calendar grid */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px}
+.dh{font-size:10px;color:var(--text3);text-align:center;padding:3px 0;font-weight:500}
+.dc{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);border:1px solid transparent;transition:background .12s}
+.dc:hover{background:var(--surface)}
+.dc.today{background:var(--surface);color:var(--brand-glow);border-color:var(--border2);font-weight:600}
+.dc.sel{background:var(--brand);color:#fff;box-shadow:0 0 14px rgba(124,92,252,0.45)}
+.dc.om{color:var(--text3);opacity:.3;pointer-events:none}
+.dc.has-ev{font-weight:600}
+.dots{display:flex;gap:2px;margin-top:2px}
+.dot{width:4px;height:4px;border-radius:50%}
+.dot-e{background:var(--brand-glow)}
+.dot-b{background:var(--accent-bday)}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.card-row{display:flex;align-items:flex-start;gap:12px}
+.icon-box{width:40px;height:40px;border-radius:var(--r-sm);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.ic-ev{background:rgba(124,92,252,0.18);border:1px solid var(--border2)}
+.ic-bd{background:rgba(255,179,71,0.15);border:1px solid rgba(255,179,71,0.3)}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.card-sub{font-size:12px;color:var(--text2);line-height:1.45}
+.card-desc{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-top:7px;letter-spacing:.03em}
+.tag-ev{background:rgba(124,92,252,0.18);color:var(--brand-glow);border:1px solid rgba(124,92,252,0.3)}
+.tag-free{background:rgba(34,197,94,0.14);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.tag-bd{background:rgba(255,179,71,0.14);color:var(--accent-bday);border:1px solid rgba(255,179,71,0.3)}
+.badge-free{display:inline-flex;align-items:center;background:#22c55e;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;letter-spacing:.05em;margin-left:5px}
+
+/* Avatar */
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+
+/* Birthday list */
+.bd-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.bd-row:last-child{border-bottom:none}
+.bd-name{font-size:13px;font-weight:500;color:var(--text)}
+.bd-date{font-size:11px;color:var(--text3);margin-top:2px}
+.bd-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.bd-today{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+.bd-soon{background:rgba(255,179,71,0.14);color:var(--accent-bday);border:1px solid rgba(255,179,71,0.3)}
+
+/* Search */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round}
+.search-box{width:100%;padding:9px 12px 9px 34px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-family:var(--font)}
+.search-box::placeholder{color:var(--text3)}
+.search-box:focus{outline:none;border-color:var(--border2)}
+
+/* Pills */
+.pill-row{display:flex;gap:5px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.pill-row::-webkit-scrollbar{display:none}
+.pill{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:var(--font);transition:all .15s}
+.pill.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* Section label */
+.slabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin:0 0 10px}
+.sec-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* ── VIEW: DAY ── */
+.day-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.day-big{font-size:42px;font-weight:700;color:var(--text);line-height:1}
+.day-meta{font-size:12px;color:var(--text3);margin-top:2px}
+.day-nav-row{display:flex;gap:6px}
+.day-nav-btn{padding:5px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;font-family:var(--font)}
+
+/* ── VIEW: WEEK ── */
+.week-row{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.week-row::-webkit-scrollbar{display:none}
+.wday{min-width:44px;flex:1;border-radius:var(--r-sm);padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:1px solid transparent;transition:background .12s}
+.wday:hover{background:var(--surface)}
+.wday.today{border-color:var(--border2)}
+.wday.sel{background:var(--brand);border-color:transparent}
+.wday-label{font-size:9px;font-weight:500;color:var(--text3);text-transform:uppercase}
+.wday.sel .wday-label{color:rgba(255,255,255,.7)}
+.wday-num{font-size:15px;font-weight:600;color:var(--text2)}
+.wday.today .wday-num{color:var(--brand-glow)}
+.wday.sel .wday-num{color:#fff}
+
+/* ── VIEW: YEAR ── */
+.year-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-month{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px}
+.mini-month-title{font-size:11px;font-weight:600;color:var(--text);margin-bottom:8px;text-align:center}
+.mini-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.mini-dh{font-size:7px;color:var(--text3);text-align:center;padding:1px 0}
+.mini-dc{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--text3)}
+.mini-dc.has{background:rgba(124,92,252,0.25);color:var(--brand-glow);font-weight:600}
+.mini-dc.hasbday{background:rgba(255,179,71,0.2);color:var(--accent-bday)}
+.mini-dc.hasboth{background:rgba(124,92,252,0.3);color:var(--brand-glow);font-weight:700}
+.mini-dc.today{outline:1px solid var(--brand-glow)}
+.mini-dc.om{opacity:.2}
+
+/* ── VIEW: LIST ── */
+.list-section-hdr{display:flex;align-items:center;gap:8px;margin:14px 0 8px}
+.list-section-hdr .line{flex:1;height:1px;background:var(--border)}
+.list-section-hdr span{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.list-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.list-item:last-child{border-bottom:none}
+.list-date{width:36px;text-align:center;flex-shrink:0}
+.list-date-d{font-size:17px;font-weight:600;color:var(--brand-glow);line-height:1}
+.list-date-m{font-size:9px;color:var(--text3);text-transform:uppercase;margin-top:1px}
+.list-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.list-sub{font-size:11px;color:var(--text3);line-height:1.4}
+.list-bday-d{width:36px;text-align:center;flex-shrink:0}
+.list-bday-d span{font-size:17px}
+
+/* Legend row */
+.legend{display:flex;gap:12px;margin-bottom:14px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3)}
+
+/* Empty */
+.empty{text-align:center;padding:32px 20px;color:var(--text3);font-size:13px;line-height:1.6}
+
+.fade-in{animation:fi .22s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div class="header">
+    <div>
+      <div class="hdr-tag">AB2L GenZ Law</div>
+      <div class="hdr-title" id="view-title">Agenda</div>
+    </div>
+    <div class="logo">AB</div>
+  </div>
+
+  <!-- view switcher only shown on agenda tab -->
+  <div class="view-switcher" id="view-switcher">
+    <button class="vs-btn active" id="vs-mes"   onclick="setView('mes')">Mês</button>
+    <button class="vs-btn"        id="vs-semana" onclick="setView('semana')">Semana</button>
+    <button class="vs-btn"        id="vs-dia"    onclick="setView('dia')">Dia</button>
+    <button class="vs-btn"        id="vs-lista"  onclick="setView('lista')">Lista</button>
+    <button class="vs-btn"        id="vs-ano"    onclick="setView('ano')">Ano</button>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <div id="v-cal" class="fade-in"></div>
+    <div id="v-ev"  style="display:none" class="fade-in"></div>
+    <div id="v-bd"  style="display:none" class="fade-in"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nb active" id="nb-cal" onclick="goTab('cal')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Agenda
+    </button>
+    <button class="nb" id="nb-ev" onclick="goTab('ev')">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Eventos
+    </button>
+    <button class="nb" id="nb-bd" onclick="goTab('bd')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Embaixadores
+    </button>
+  </div>
+</div>
+
+<script>
+const MESES  = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES3 = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const DIAS3  = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const PALETTES = [
+  ['#2D1B69','#A78BFA'],['#064E3B','#6EE7B7'],['#78350F','#FCD34D'],
+  ['#1E3A5F','#93C5FD'],['#4A044E','#F0ABFC'],['#7F1D1D','#FCA5A5'],
+  ['#134E4A','#5EEAD4'],['#1E1B4B','#C7D2FE'],
+];
+
+const hoje = new Date();
+let curM=hoje.getMonth(), curY=hoje.getFullYear(), selD=hoje.getDate();
+let curView='mes'; // mes | semana | dia | lista | ano
+let curTab='cal';
+let filterMes=0, bdSearch='';
+
+/* ── DATA ── */
+const embaixadores = [
+  {n:'Juh',fn:'Julya Cardoso Barbosa',d:31,m:1,e:'SP'},
+  {n:'Victor',fn:'Victor Augusto Bahia Lessa',d:26,m:6,e:'BA'},
+  {n:'Weverton',fn:'Weverton da Silva Prates',d:11,m:4,e:'SP'},
+  {n:'Alê',fn:'Alessandro Santos Silva',d:12,m:4,e:'SP'},
+  {n:'Luana',fn:'Luana Russo Viudes',d:17,m:3,e:'SP'},
+  {n:'Sofi',fn:'Sofia Gontijo',d:21,m:8,e:'SP'},
+  {n:'Gi',fn:'Giovana Mari Ide',d:16,m:7,e:'SP'},
+  {n:'Nat',fn:'Natasha Penaforte',d:24,m:1,e:'MG'},
+  {n:'Camilla',fn:'Camilla De Oliveira Santos',d:22,m:5,e:'SP'},
+  {n:'Felipe',fn:'Felipe Guardiano',d:10,m:10,e:'SP'},
+  {n:'Sofia',fn:'Sofia Amorim Costa',d:6,m:4,e:'SP'},
+  {n:'Ana Elvira',fn:'Ana Elvira Maurmann',d:7,m:11,e:'DF'},
+  {n:'Yas',fn:'Yasmin Graciano',d:12,m:5,e:'PR'},
+  {n:'Iza',fn:'Izadora Oliveira dos Santos',d:8,m:1,e:'SP'},
+  {n:'Bernardo',fn:'Edson Bernardo',d:22,m:2,e:'SP'},
+  {n:'Emilly',fn:'Emilly Kelly Laurentino',d:16,m:9,e:'AL'},
+  {n:'Steph',fn:'Stephanie Victoria Cativo',d:8,m:9,e:'AM'},
+  {n:'Kevin',fn:'Kevin Willian Batista',d:11,m:11,e:'SP'},
+  {n:'Matheus',fn:'Matheus Leite dos Santos',d:21,m:6,e:'SP'},
+  {n:'Julia',fn:'Julia Paes de Almeida',d:14,m:11,e:'SP'},
+  {n:'Lari',fn:'Larissa Andrade Faria',d:21,m:5,e:'SP'},
+  {n:'Isabella',fn:'Isabella Vitória Brandão',d:20,m:7,e:'MG'},
+  {n:'Ni',fn:'Nicole Scrimin',d:23,m:4,e:'SP'},
+  {n:'Luciana',fn:'Luciana AP da Silva Barbosa',d:12,m:2,e:'SP'},
+  {n:'Rosy',fn:'Rosicléia Xavier dos Santos',d:12,m:6,e:'AL'},
+  {n:'Ruhan',fn:'Ruhan Ferreira Sandim',d:28,m:12,e:'MG'},
+  {n:'Carlos',fn:'Carlos Henrique Menezes',d:25,m:5,e:'MA'},
+  {n:'Mel',fn:'Melany Bicelly Ticona Blanco',d:23,m:3,e:'SP'},
+  {n:'Erika',fn:'Erika da Silva de Souza',d:29,m:12,e:'AM'},
+  {n:'Gustavo',fn:'Gustavo Araujo do Nascimento',d:14,m:6,e:'SP'},
+  {n:'Lis',fn:'Lis Loureiro Sousa',d:20,m:2,e:'BA'},
+  {n:'Laila',fn:'Laila Moura Araujo',d:4,m:11,e:'PB'},
+  {n:'Emi',fn:'Emily Vitória Oliveira',d:24,m:1,e:'SP'},
+  {n:'Jack',fn:'Jackeline Frazão de Oliveira',d:25,m:11,e:'RJ'},
+  {n:'Pedro',fn:'Pedro Carvalho Dorfmann',d:23,m:3,e:'RS'},
+  {n:'Leticia',fn:'Leticia Vitória Medeiros',d:16,m:12,e:'CE'},
+  {n:'Isa',fn:'Isabela Vidotti Braga',d:21,m:3,e:'SP'},
+  {n:'Maria',fn:'Maria Eduarda Saija',d:22,m:11,e:'SC'},
+  {n:'Sâmela',fn:'Sâmela dos Santos Tenório',d:16,m:5,e:'AL'},
+  {n:'Livia',fn:'Livia Muniz Strobel Vieira',d:19,m:8,e:'SP'},
+  {n:'Marina',fn:'Marina Santiago dos Santos',d:9,m:11,e:'AM'},
+  {n:'Esther',fn:'Esther',d:9,m:7,e:'SP'},
+  {n:'Raíssa',fn:'Raíssa',d:27,m:9,e:'AM'},
+  {n:'Lais',fn:'Lais',d:7,m:3,e:'PI'},
+  {n:'Rafaely',fn:'Rafaely',d:7,m:11,e:'SP'},
+  {n:'Dé',fn:'Dé',d:20,m:1,e:'SP'},
+  {n:'Rafa',fn:'Rafa',d:18,m:4,e:'SP'},
+  {n:'Manu',fn:'Manu',d:7,m:8,e:'AM'},
+  {n:'Madu',fn:'Madu',d:13,m:7,e:'AM'},
+  {n:'Alice',fn:'Alice Guimarães',d:25,m:8,e:'MA'},
+  {n:'Nay',fn:'Nay',d:9,m:8,e:'SP'},
+  {n:'Ines',fn:'Ines',d:27,m:9,e:'RJ'},
+  {n:'Cá',fn:'Cá',d:13,m:2,e:'SP'},
+  {n:'Lívia',fn:'Lívia',d:27,m:10,e:'SP'},
+  {n:'Duda',fn:'Duda',d:30,m:9,e:'SP'},
+  {n:'Antônio',fn:'Antônio/Toni',d:13,m:7,e:'BA'},
+  {n:'LIVIA',fn:'Lívia',d:19,m:11,e:'PB'},
+  {n:'Priscila',fn:'Priscila',d:1,m:1,e:'SP'},
+];
+
+const eventos = [
+  {id:1,title:'Violência Digital de Gênero',date:'2026-03-28',time:'10:00 às 12:00',local:'Online',desc:'Em homenagem ao mês das mulheres, convidamos as Valkirias Digitais — iniciativa da Comissão de Privacidade, Proteção de Dados e IA da OAB SP.',tipo:'evento'},
+  {id:2,title:'Z2Z',date:'2026-04-11',time:'10:00 às 12:00',local:'Online',desc:'Apresentação do Trainee Felipe Amaral.',tipo:'evento'},
+  {id:5,title:'Adequação Mútua entre a LGPD e a GDPR',date:'2026-04-22',time:'A confirmar',local:'Tozzini Freire Advogados',desc:'Evento promovido pelo Tozzini Freire sobre a adequação mútua entre a LGPD e o GDPR europeu.',tipo:'evento'},
+  {id:3,title:'Neurodireitos sob a perspectiva da Bioética e da Proteção de Dados Pessoais',date:'2026-04-25',time:'10:00',local:'Online (solicite o link)',desc:'Em parceria com a LAINTEC/UNEAL. Palestrantes: Helora Joventino e Sâmela Tenório (Embaixadora AB2L GenZ Law).',tipo:'evento'},
+  {id:6,title:'AB2L LEX',date:'2026-05-13',time:'08:00 às 19:00',local:'Rio de Janeiro',desc:'Maior congresso de inovação jurídica do mundo. Para embaixadores engajados, os ingressos são gratuitos.',tipo:'free'},
+  {id:7,title:'AB2L LEX — Dia 2',date:'2026-05-14',time:'08:00 às 19:00',local:'Rio de Janeiro',desc:'Segundo dia do congresso. Para embaixadores engajados, os ingressos são gratuitos.',tipo:'free'},
+  {id:8,title:'Encontro Mensal',date:'2026-05-30',time:'A confirmar',local:'A confirmar',desc:'Encontro mensal dos embaixadores AB2L GenZ Law.',tipo:'evento'},
+];
+
+/* ── HELPERS ── */
+function pp(s){const[y,m,d]=s.split('-').map(Number);return{y,m,d}}
+function ini(fn){return fn.split(/[\s\/,]+/).filter(Boolean).slice(0,2).map(p=>p[0].toUpperCase()).join('')}
+function pal(i){return PALETTES[i%PALETTES.length]}
+function dayEvs(d,m,y){return eventos.filter(e=>{const p=pp(e.date);return p.d===d&&p.m===m+1&&p.y===y})}
+function dayBd(d,m){return embaixadores.filter(b=>b.d===d&&b.m===m+1)}
+function isToday(d,m,y){return d===hoje.getDate()&&m===hoje.getMonth()&&y===hoje.getFullYear()}
+function daysTo(b){
+  const now=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  let nx=new Date(hoje.getFullYear(),b.m-1,b.d);
+  if(nx<now)nx=new Date(hoje.getFullYear()+1,b.m-1,b.d);
+  return Math.round((nx-now)/864e5);
+}
+function evCard(ev,showFullDate=false){
+  const p=pp(ev.date);
+  const fb=ev.tipo==='free'?`<span class="badge-free">FREE</span>`:'';
+  const tagCls=ev.tipo==='free'?'tag-free':'tag-ev';
+  const tagLbl=ev.tipo==='free'?'Gratuito p/ embaixadores':'Evento';
+  const dateStr=showFullDate?`${String(p.d).padStart(2,'0')}/${String(p.m).padStart(2,'0')} · `:'';
+  return `<div class="card"><div class="card-row">
+    <div class="icon-box ic-ev">
+      <span style="font-size:13px;font-weight:600;color:var(--brand-glow)">${p.d}</span>
+      <span style="font-size:9px;color:var(--text3)">${MESES3[p.m-1]}</span>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="card-title">${ev.title}${fb}</div>
+      <div class="card-sub">${dateStr}${ev.time} · ${ev.local}</div>
+      ${ev.desc?`<div class="card-desc">${ev.desc}</div>`:''}
+      <span class="tag ${tagCls}">${tagLbl}</span>
+    </div>
+  </div></div>`;
+}
+function bdCard(b){
+  const[bg,clr]=pal(embaixadores.indexOf(b));
+  return `<div class="card"><div class="card-row">
+    <div class="avatar" style="background:${bg};color:${clr}">${ini(b.fn)}</div>
+    <div><div class="card-title">${b.fn}</div>
+    <div class="card-sub">🎂 Aniversário hoje!</div>
+    <span class="tag tag-bd">Embaixador(a)</span></div>
+  </div></div>`;
+}
+function legend(){
+  return `<div class="legend">
+    <div class="leg-item"><span class="dot dot-e" style="width:6px;height:6px"></span>Evento</div>
+    <div class="leg-item"><span class="dot dot-b" style="width:6px;height:6px"></span>Aniversário</div>
+  </div>`;
+}
+
+/* ── VIEW: MÊS ── */
+function renderMes(){
+  const first=new Date(curY,curM,1).getDay();
+  const lastD=new Date(curY,curM+1,0).getDate();
+  const prevL=new Date(curY,curM,0).getDate();
+  let h=`<div class="month-nav">
+    <button class="mn-btn" onclick="chM(-1)">‹</button>
+    <span class="month-label">${MESES[curM]} ${curY}</span>
+    <button class="mn-btn" onclick="chM(1)">›</button>
+  </div>
+  <div class="cal">
+    <div class="dh">D</div><div class="dh">S</div><div class="dh">T</div>
+    <div class="dh">Q</div><div class="dh">Q</div><div class="dh">S</div><div class="dh">S</div>`;
+  for(let i=0;i<first;i++) h+=`<div class="dc om">${prevL-first+1+i}</div>`;
+  for(let d=1;d<=lastD;d++){
+    const sel=d===selD,tod=isToday(d,curM,curY)&&!sel;
+    const evs=dayEvs(d,curM,curY),bds=dayBd(d,curM);
+    let dots='';
+    if(evs.length) dots+=`<span class="dot dot-e"></span>`;
+    if(bds.length) dots+=`<span class="dot dot-b"></span>`;
+    h+=`<div class="dc${tod?' today':''}${sel?' sel':''}${(evs.length||bds.length)?' has-ev':''}" onclick="selDay(${d})">${d}${dots?`<div class="dots">${dots}</div>`:''}</div>`;
+  }
+  const rem=42-first-lastD;
+  for(let i=1;i<=rem;i++) h+=`<div class="dc om">${i}</div>`;
+  h+=`</div>`+legend();
+  // day detail
+  const evs=dayEvs(selD,curM,curY),bds=dayBd(selD,curM);
+  const lbl=isToday(selD,curM,curY)?`Hoje, ${selD} de ${MESES[curM]}`:`${selD} de ${MESES[curM]}`;
+  h+=`<div class="slabel">${lbl}</div>`;
+  if(!evs.length&&!bds.length) h+=`<div class="empty">Nenhum evento ou aniversário ✦</div>`;
+  bds.forEach(b=>h+=bdCard(b));
+  evs.forEach(ev=>h+=evCard(ev));
+  document.getElementById('v-cal').innerHTML=h;
+}
+
+/* ── VIEW: SEMANA ── */
+function renderSemana(){
+  // find Monday of the week containing selD
+  const ref=new Date(curY,curM,selD);
+  const dow=ref.getDay(); // 0=sun
+  const weekStart=new Date(ref); weekStart.setDate(ref.getDate()-dow);
+
+  // week strip
+  let h=`<div class="month-nav">
+    <button class="mn-btn" onclick="chWeek(-1)">‹</button>
+    <span class="month-label">${MESES3[weekStart.getMonth()]} ${weekStart.getFullYear()}</span>
+    <button class="mn-btn" onclick="chWeek(1)">›</button>
+  </div>
+  <div class="week-row">`;
+  for(let i=0;i<7;i++){
+    const d=new Date(weekStart); d.setDate(weekStart.getDate()+i);
+    const dd=d.getDate(),mm=d.getMonth(),yy=d.getFullYear();
+    const isSel=(dd===selD&&mm===curM&&yy===curY);
+    const isTod=isToday(dd,mm,yy)&&!isSel;
+    const hasEv=dayEvs(dd,mm,yy).length>0||dayBd(dd,mm).length>0;
+    let dots='';
+    if(dayEvs(dd,mm,yy).length) dots+=`<span class="dot dot-e"></span>`;
+    if(dayBd(dd,mm).length) dots+=`<span class="dot dot-b"></span>`;
+    h+=`<div class="wday${isTod?' today':''}${isSel?' sel':''}" onclick="selWeekDay(${dd},${mm},${yy})">
+      <span class="wday-label">${DIAS3[i]}</span>
+      <span class="wday-num">${dd}</span>
+      ${dots?`<div class="dots">${dots}</div>`:'<div style="height:6px"></div>'}
+    </div>`;
+  }
+  h+=`</div>`+legend();
+  // day detail
+  const evs=dayEvs(selD,curM,curY),bds=dayBd(selD,curM);
+  const selDate=new Date(curY,curM,selD);
+  const lbl=isToday(selD,curM,curY)?`Hoje, ${selD} de ${MESES[curM]}`:`${DIAS3[selDate.getDay()]}, ${selD} de ${MESES[curM]}`;
+  h+=`<div class="slabel">${lbl}</div>`;
+  if(!evs.length&&!bds.length) h+=`<div class="empty">Nenhum evento ou aniversário ✦</div>`;
+  bds.forEach(b=>h+=bdCard(b));
+  evs.forEach(ev=>h+=evCard(ev));
+  document.getElementById('v-cal').innerHTML=h;
+}
+
+/* ── VIEW: DIA ── */
+function renderDia(){
+  const dt=new Date(curY,curM,selD);
+  const dow=DIAS3[dt.getDay()];
+  const evs=dayEvs(selD,curM,curY),bds=dayBd(selD,curM);
+  const todBadge=isToday(selD,curM,curY)?`<span class="bd-badge bd-today" style="margin-left:8px">Hoje</span>`:'';
+  let h=`<div class="day-header">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <div class="day-big">${selD}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text2)">${dow}${todBadge}</div>
+          <div style="font-size:12px;color:var(--text3)">${MESES[curM]} ${curY}</div>
+        </div>
+      </div>
+    </div>
+    <div class="day-nav-row">
+      <button class="day-nav-btn" onclick="chDay(-1)">‹</button>
+      <button class="day-nav-btn" onclick="chDay(1)">›</button>
+    </div>
+  </div>`;
+  if(!evs.length&&!bds.length){
+    h+=`<div class="empty">Nenhum evento ou aniversário neste dia ✦</div>`;
+  } else {
+    if(bds.length){h+=`<div class="slabel">Aniversários</div>`;bds.forEach(b=>h+=bdCard(b));}
+    if(evs.length){h+=`<div class="slabel">Eventos</div>`;evs.forEach(ev=>h+=evCard(ev));}
+  }
+  document.getElementById('v-cal').innerHTML=h;
+}
+
+/* ── VIEW: LISTA ── */
+function renderLista(){
+  const now=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  // build unified timeline: merge events + birthdays of the year
+  const items=[];
+  eventos.forEach(ev=>{
+    const p=pp(ev.date);
+    items.push({date:new Date(p.y,p.m-1,p.d),tipo:'ev',data:ev});
+  });
+  // birthdays this year and next (show 12 months ahead)
+  embaixadores.forEach((b,i)=>{
+    [0,1].forEach(offset=>{
+      const d=new Date(hoje.getFullYear()+offset,b.m-1,b.d);
+      if(d>=new Date(hoje.getFullYear(),0,1)&&d<=new Date(hoje.getFullYear()+1,11,31)){
+        items.push({date:d,tipo:'bd',data:{...b,idx:i}});
+      }
+    });
+  });
+  items.sort((a,b)=>a.date-b.date);
+
+  const upcoming=items.filter(i=>i.date>=now);
+  const past=items.filter(i=>i.date<now).reverse();
+
+  let h='';
+  if(upcoming.length){
+    h+=`<div class="sec-title">Próximos</div>`;
+    let lastMonthKey='';
+    upcoming.forEach(item=>{
+      const mk=item.date.getFullYear()+'-'+item.date.getMonth();
+      if(mk!==lastMonthKey){
+        lastMonthKey=mk;
+        h+=`<div class="list-section-hdr"><div class="line"></div><span>${MESES[item.date.getMonth()]} ${item.date.getFullYear()}</span><div class="line"></div></div>`;
+      }
+      if(item.tipo==='ev'){
+        const ev=item.data;
+        const fb=ev.tipo==='free'?`<span class="badge-free">FREE</span>`:'';
+        h+=`<div class="list-item">
+          <div class="list-date"><div class="list-date-d">${item.date.getDate()}</div><div class="list-date-m">${MESES3[item.date.getMonth()]}</div></div>
+          <div style="flex:1;min-width:0"><div class="list-title">${ev.title}${fb}</div><div class="list-sub">${ev.time} · ${ev.local}</div></div>
+        </div>`;
+      } else {
+        const b=item.data;
+        const[bg,clr]=pal(b.idx);
+        const isHj=isToday(item.date.getDate(),item.date.getMonth(),item.date.getFullYear());
+        h+=`<div class="list-item">
+          <div class="list-date"><div class="list-date-d">${item.date.getDate()}</div><div class="list-date-m">${MESES3[item.date.getMonth()]}</div></div>
+          <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
+            <div class="avatar" style="width:28px;height:28px;font-size:10px;background:${bg};color:${clr}">${ini(b.fn)}</div>
+            <div><div class="list-title" style="font-size:12px">🎂 ${b.fn}</div><div class="list-sub">${isHj?'Hoje!':'Aniversário'} · ${b.e}</div></div>
+          </div>
+        </div>`;
+      }
+    });
+  }
+  if(past.length){
+    h+=`<div class="divider"></div><div class="slabel">Passados</div>`;
+    let lastMonthKey='';
+    past.slice(0,20).forEach(item=>{
+      const mk=item.date.getFullYear()+'-'+item.date.getMonth();
+      if(mk!==lastMonthKey){
+        lastMonthKey=mk;
+        h+=`<div class="list-section-hdr"><div class="line"></div><span>${MESES[item.date.getMonth()]} ${item.date.getFullYear()}</span><div class="line"></div></div>`;
+      }
+      if(item.tipo==='ev'){
+        const ev=item.data;
+        h+=`<div class="list-item" style="opacity:.45">
+          <div class="list-date"><div class="list-date-d">${item.date.getDate()}</div><div class="list-date-m">${MESES3[item.date.getMonth()]}</div></div>
+          <div><div class="list-title">${ev.title}</div><div class="list-sub">${ev.time} · ${ev.local}</div></div>
+        </div>`;
+      }
+    });
+  }
+  document.getElementById('v-cal').innerHTML=h||`<div class="empty">Sem itens na lista ✦</div>`;
+}
+
+/* ── VIEW: ANO ── */
+function renderAno(){
+  let h=`<div class="month-nav">
+    <button class="mn-btn" onclick="chY(-1)">‹</button>
+    <span class="month-label">${curY}</span>
+    <button class="mn-btn" onclick="chY(1)">›</button>
+  </div>`+legend()+`<div class="year-grid">`;
+
+  for(let m=0;m<12;m++){
+    const lastD=new Date(curY,m+1,0).getDate();
+    const first=new Date(curY,m,1).getDay();
+    h+=`<div class="mini-month" onclick="jumpToMonth(${m})">
+      <div class="mini-month-title">${MESES3[m]}</div>
+      <div class="mini-cal">
+        <div class="mini-dh">D</div><div class="mini-dh">S</div><div class="mini-dh">T</div>
+        <div class="mini-dh">Q</div><div class="mini-dh">Q</div><div class="mini-dh">S</div><div class="mini-dh">S</div>`;
+    for(let i=0;i<first;i++) h+=`<div class="mini-dc om"></div>`;
+    for(let d=1;d<=lastD;d++){
+      const hasEv=dayEvs(d,m,curY).length>0;
+      const hasBd=dayBd(d,m).length>0;
+      const tod=isToday(d,m,curY);
+      let cls='mini-dc';
+      if(hasEv&&hasBd) cls+=' hasboth';
+      else if(hasEv) cls+=' has';
+      else if(hasBd) cls+=' hasbday';
+      if(tod) cls+=' today';
+      h+=`<div class="${cls}">${d}</div>`;
+    }
+    h+=`</div></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('v-cal').innerHTML=h;
+}
+
+/* ── RENDER CAL dispatcher ── */
+function renderCal(){
+  if(curView==='mes') renderMes();
+  else if(curView==='semana') renderSemana();
+  else if(curView==='dia') renderDia();
+  else if(curView==='lista') renderLista();
+  else if(curView==='ano') renderAno();
+}
+
+/* ── Eventos tab ── */
+function renderEv(){
+  const now=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
+  const sorted=[...eventos].sort((a,b)=>a.date.localeCompare(b.date));
+  const upcoming=sorted.filter(e=>new Date(e.date)>=now);
+  const past=sorted.filter(e=>new Date(e.date)<now);
+  let h='';
+  if(upcoming.length){
+    h+=`<div class="sec-title">Próximos eventos</div>`;
+    upcoming.forEach(ev=>h+=evCard(ev,true));
+  }
+  if(past.length){
+    if(upcoming.length) h+=`<div class="divider"></div>`;
+    h+=`<div class="slabel">Eventos passados</div>`;
+    past.forEach(ev=>{
+      const p=pp(ev.date);
+      h+=`<div class="card" style="opacity:.45"><div class="card-row">
+        <div class="icon-box ic-ev"><span style="font-size:13px;font-weight:600;color:var(--brand-glow)">${p.d}</span><span style="font-size:9px;color:var(--text3)">${MESES3[p.m-1]}</span></div>
+        <div><div class="card-title">${ev.title}</div><div class="card-sub">${String(p.d).padStart(2,'0')}/${String(p.m).padStart(2,'0')} · ${ev.time} · ${ev.local}</div></div>
+      </div></div>`;
+    });
+  }
+  if(!eventos.length) h=`<div class="empty">Nenhum evento cadastrado ainda.</div>`;
+  document.getElementById('v-ev').innerHTML=h;
+}
+
+/* ── Embaixadores tab ── */
+function renderBd(){
+  const list=embaixadores.map((b,i)=>({...b,days:daysTo(b),idx:i})).sort((a,b)=>a.days-b.days);
+  const filt=filterMes===0?list:list.filter(b=>b.m===filterMes);
+  const show=bdSearch?filt.filter(b=>b.fn.toLowerCase().includes(bdSearch.toLowerCase())||b.n.toLowerCase().includes(bdSearch.toLowerCase())):filt;
+  let h=`<div class="search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-box" type="text" placeholder="Buscar embaixador..." value="${bdSearch}" oninput="bdS(this.value)">
+  </div>
+  <div class="pill-row">
+    <button class="pill${filterMes===0?' active':''}" onclick="setMF(0)">Todos</button>`;
+  for(let i=1;i<=12;i++) h+=`<button class="pill${filterMes===i?' active':''}" onclick="setMF(${i})">${MESES3[i-1]}</button>`;
+  h+=`</div><div class="slabel">${show.length} embaixador${show.length!==1?'es':''}</div>`;
+  show.forEach(b=>{
+    const[bg,clr]=pal(b.idx);
+    const isHj=b.days===0||b.days===365;
+    let badge='';
+    if(isHj) badge=`<span class="bd-badge bd-today">🎂 Hoje!</span>`;
+    else if(b.days<=7) badge=`<span class="bd-badge bd-soon">em ${b.days}d</span>`;
+    h+=`<div class="bd-row">
+      <div class="avatar" style="background:${bg};color:${clr}">${ini(b.fn)}</div>
+      <div style="flex:1"><div class="bd-name">${b.fn}</div><div class="bd-date">${String(b.d).padStart(2,'0')}/${String(b.m).padStart(2,'0')} · ${b.e}</div></div>
+      ${badge}
+    </div>`;
+  });
+  document.getElementById('v-bd').innerHTML=h;
+}
+
+/* ── NAVIGATION ── */
+function goTab(t){
+  curTab=t;
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nb-'+t).classList.add('active');
+  ['cal','ev','bd'].forEach(v=>{const el=document.getElementById('v-'+v);el.style.display='none';el.classList.remove('fade-in')});
+  const el=document.getElementById('v-'+t);
+  el.style.display=''; void el.offsetWidth; el.classList.add('fade-in');
+  const titles={cal:'Agenda',ev:'Eventos',bd:'Embaixadores'};
+  document.getElementById('view-title').textContent=titles[t];
+  document.getElementById('view-switcher').style.display=t==='cal'?'flex':'none';
+  document.getElementById('scroll').scrollTop=0;
+  if(t==='cal') renderCal();
+  else if(t==='ev') renderEv();
+  else renderBd();
+}
+
+function setView(v){
+  curView=v;
+  document.querySelectorAll('.vs-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('vs-'+v).classList.add('active');
+  document.getElementById('scroll').scrollTop=0;
+  renderCal();
+}
+
+function chM(d){curM+=d;if(curM>11){curM=0;curY++;}if(curM<0){curM=11;curY--;}selD=1;renderCal();}
+function chY(d){curY+=d;renderCal();}
+function selDay(d){selD=d;renderCal();}
+function jumpToMonth(m){curM=m;selD=1;setView('mes');}
+
+function selWeekDay(d,m,y){selD=d;curM=m;curY=y;renderCal();}
+function chWeek(dir){
+  const d=new Date(curY,curM,selD);
+  d.setDate(d.getDate()+dir*7);
+  selD=d.getDate();curM=d.getMonth();curY=d.getFullYear();
+  renderCal();
+}
+function chDay(dir){
+  const d=new Date(curY,curM,selD);
+  d.setDate(d.getDate()+dir);
+  selD=d.getDate();curM=d.getMonth();curY=d.getFullYear();
+  renderCal();
+}
+
+function setMF(m){filterMes=m;renderBd();}
+function bdS(v){bdSearch=v;renderBd();}
+
+renderCal();
+</script>
+</body>
+</html>
