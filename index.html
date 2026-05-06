@@ -222,6 +222,63 @@ body{font-family:var(--font);color:var(--text)}
 .fade-in{animation:fi .22s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+/* ── GenZ no Rio ── */
+.rj-hero{
+  background:linear-gradient(135deg,#1a1432 0%,#0d1a2e 100%);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+.rj-hero::before{
+  content:'🌊';
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-size:48px;opacity:.15;
+}
+.rj-hero-tag{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#FFB347;margin-bottom:6px}
+.rj-hero-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.01em;margin-bottom:4px}
+.rj-hero-sub{font-size:12px;color:var(--text3);line-height:1.5}
+.rj-day-block{margin-bottom:18px}
+.rj-day-hdr{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:10px;
+}
+.rj-day-pill{
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:4px 14px;
+  font-size:12px;font-weight:600;
+  color:var(--brand-glow);
+}
+.rj-day-line{flex:1;height:1px;background:var(--border)}
+.rj-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--rsm);
+  margin-bottom:7px;
+}
+.rj-item.highlight{border-color:rgba(159,122,255,0.4);background:rgba(124,92,252,0.08)}
+.rj-item-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.rj-item-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.rj-item-sub{font-size:11px;color:var(--text3)}
+.rj-time-badge{
+  font-size:10px;font-weight:600;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:2px 7px;
+  color:var(--text3);
+  white-space:nowrap;
+  flex-shrink:0;
+  margin-left:auto;
+  align-self:center;
+}
+
 /* ── Export buttons ── */
 .export-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .exp-btn{
@@ -274,6 +331,7 @@ body{font-family:var(--font);color:var(--text)}
     <div id="v-cal" class="fade-in"></div>
     <div id="v-ev"  style="display:none" class="fade-in"></div>
     <div id="v-bd"  style="display:none" class="fade-in"></div>
+    <div id="v-rj"  style="display:none" class="fade-in"></div>
   </div>
 
   <div class="bottom-nav">
@@ -288,6 +346,10 @@ body{font-family:var(--font);color:var(--text)}
     <button class="nb" id="nb-bd" onclick="goTab('bd')">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="14" x2="12" y2="17"/><line x1="8" y1="15.5" x2="16" y2="15.5" stroke-width="1.2"/></svg>
       Aniversários
+    </button>
+    <button class="nb" id="nb-rj" onclick="goTab('rj')">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      GenZ no Rio
     </button>
   </div>
 </div>
@@ -373,10 +435,13 @@ const eventos = [
   {id:1,title:'Violência Digital de Gênero',date:'2026-03-28',time:'10:00 às 12:00',local:'Online',desc:'Em homenagem ao mês das mulheres, convidamos as Valkirias Digitais — iniciativa da Comissão de Privacidade, Proteção de Dados e IA da OAB SP.',tipo:'evento'},
   {id:2,title:'Z2Z',date:'2026-04-11',time:'10:00 às 12:00',local:'Online',desc:'Apresentação do Trainee Felipe Amaral.',tipo:'evento'},
   {id:3,title:'Neurodireitos sob a perspectiva da Bioética e da Proteção de Dados Pessoais',date:'2026-04-25',time:'10:00',local:'Online (solicite o link)',desc:'Em parceria com a LAINTEC/UNEAL. Palestrantes: Helora Joventino e Sâmela Tenório (Embaixadora AB2L GenZ Law).',tipo:'evento'},
-  {id:5,title:'Adequação Mútua entre a LGPD e a GDPR',date:'2026-05-22',time:'A confirmar',local:'Híbrido — Tozzini Freire Advogados',desc:'Evento promovido pelo Tozzini Freire sobre a adequação mútua entre a LGPD e o GDPR europeu. Formato híbrido.',tipo:'evento'},
-  {id:9,title:'Z2Z com Carlos Henrique',date:'2026-05-23',time:'A confirmar',local:'Online',desc:'Apresentação do embaixador Carlos Henrique Menezes.',tipo:'evento'},
-  {id:6,title:'AB2L LEX',date:'2026-05-13',time:'08:00 às 19:00',local:'Rio de Janeiro',desc:'Maior congresso de inovação jurídica do mundo. Para embaixadores engajados, os ingressos são gratuitos.',tipo:'free'},
+  {id:10,title:'AB2L & Verifact | Provas digitais: A Estratégia Jurídica e Técnica por Trás dos Grandes Casos da Internet',date:'2026-05-11',time:'14:00 às 17:00',local:'Condomínio do Edifício Botafogo Trade Center — Rio de Janeiro, RJ',desc:'Evento presencial sobre provas digitais e estratégia jurídica e técnica nos grandes casos da internet.',tipo:'evento'},
+  {id:6,title:'AB2L LEX — Painel GenZ (Palco Experience)',date:'2026-05-13',time:'15:30 às 16:10',local:'Palco Experience — Palco 1, Rio de Janeiro',desc:'EDUCAR O ADVOGADO DO AMANHÃ: Formar para a Jornada, não para o Porto. Moderadora: Maria Eduarda Ferraz (coordenadora geral). Palestrantes: Maria Eduarda Ferraz, Laryssa Sambrano e Stephanie Cativo.',tipo:'free'},
+  {id:11,title:'AB2L GenZ Law: De Nativos Digitais a Líderes da Inovação Jurídica (Palco LawCase)',date:'2026-05-13',time:'17:20 às 18:00',local:'Palco LawCase, Rio de Janeiro',desc:'Palestrantes: Maria Eduarda Ferraz, Laryssa Sambrano e Stephanie Cativo.',tipo:'free'},
+  {id:12,title:'I Simpósio de Direito, Tecnologia e Sociedade — FDUSP/OAB-SP',date:'2026-05-13',time:'14:00 às 17:00',local:'AASP Centro — Rua Álvares Penteado, 151, Centro Histórico, São Paulo, SP',desc:'Cerimonialista: Sofia Gontijo. Inscrições: https://docs.google.com/forms/d/e/1FAIpQLSeY3OAT8dPGDjE-UySOCWW2o63blzjN1NU4DK1KJ4njJTC77A/viewform',tipo:'evento'},
   {id:7,title:'AB2L LEX — Dia 2',date:'2026-05-14',time:'08:00 às 19:00',local:'Rio de Janeiro',desc:'Segundo dia do congresso. Para embaixadores engajados, os ingressos são gratuitos.',tipo:'free'},
+  {id:5,title:'Adequação Mútua entre a LGPD e a GDPR',date:'2026-05-22',time:'A confirmar',local:'Híbrido — Tozzini Freire Advogados',desc:'Em parceria com o Tozzini Freire Advogados. Evento sobre a adequação mútua entre a LGPD e o GDPR europeu. Formato híbrido.',tipo:'evento'},
+  {id:9,title:'Z2Z com Carlos Henrique',date:'2026-05-23',time:'A confirmar',local:'Online',desc:'Apresentação do embaixador Carlos Henrique Menezes.',tipo:'evento'},
   {id:8,title:'Encontro Mensal',date:'2026-05-30',time:'A confirmar',local:'A confirmar',desc:'Encontro mensal dos embaixadores AB2L GenZ Law.',tipo:'evento'},
 ];
 
@@ -558,22 +623,97 @@ function renderBd(){
 }
 
 /* ── NAVIGATION ── */
+/* ── GenZ no Rio ── */
+function renderRj(){
+  const dias = [
+    {
+      label:'Segunda · 11/05',
+      emoji:'⚡',
+      items:[
+        {icon:'🏛️',title:'Evento Verifact no Hub da AB2L',sub:'Programação principal do dia',time:'',highlight:true},
+        {icon:'🥁',title:'Pedra do Sal',sub:'Berço do samba carioca — Saúde',time:'Noite'},
+        {icon:'🛍️',title:'Botafogo Praia Shopping',sub:'Opção de lazer e alimentação',time:''},
+      ]
+    },
+    {
+      label:'Terça · 12/05',
+      emoji:'🗺️',
+      items:[
+        {icon:'🚃',title:'Bondinho de Santa Teresa',sub:'Passeio histórico pelo bairro boêmio',time:'Manhã'},
+        {icon:'⚖️',title:'Centro Cultural da Justiça Federal',sub:'',time:'11h–19h'},
+        {icon:'📚',title:'Real Gabinete Português de Leitura',sub:'Um dos mais belos interiores do RJ',time:'10h–17h'},
+        {icon:'🎨',title:'Museu Nacional de Belas Artes',sub:'',time:'13h–17h'},
+        {icon:'⚓',title:'Espaço Cultural da Marinha',sub:'',time:'11h–16h30'},
+        {icon:'🕍',title:'Mosteiro de São Bento',sub:'Arquitetura barroca imperdível',time:'6h30–18h30'},
+        {icon:'🏰',title:'Forte de Copacabana',sub:'Vista panorâmica da orla',time:'10h–19h'},
+        {icon:'🏡',title:'Casa Rui Barbosa',sub:'',time:'9h–18h'},
+        {icon:'🏛️',title:'Casa Firjan',sub:'',time:'9h–19h'},
+        {icon:'⚖️',title:'Museu de Justiça do Rio de Janeiro',sub:'',time:'11h–17h'},
+        {icon:'🚢',title:'Museu Naval do Rio',sub:'',time:''},
+      ]
+    },
+    {
+      label:'Quinta · 14/05',
+      emoji:'🎡',
+      items:[
+        {icon:'🎡',title:'Roda Gigante do Rio',sub:'Vista da Baía de Guanabara',time:''},
+        {icon:'🖼️',title:'Mural das Etnias',sub:'Arte urbana no Porto Maravilha',time:''},
+      ]
+    },
+    {
+      label:'Sexta · 15/05',
+      emoji:'🌊',
+      items:[
+        {icon:'🏖️',title:'Praia',sub:'Dia de descanso na orla carioca',time:''},
+      ]
+    },
+  ];
+
+  let h = `<div class="rj-hero">
+    <div class="rj-hero-tag">AB2L GenZ Law · Maio 2026</div>
+    <div class="rj-hero-title">GenZ no Rio 🏖️</div>
+    <div class="rj-hero-sub">Roteiro da turma para os dias do AB2L LEX — 11 a 15 de maio</div>
+  </div>`;
+
+  dias.forEach(dia => {
+    h += `<div class="rj-day-block">
+      <div class="rj-day-hdr">
+        <span class="rj-day-pill">${dia.emoji} ${dia.label}</span>
+        <div class="rj-day-line"></div>
+      </div>`;
+    dia.items.forEach(item => {
+      h += `<div class="rj-item${item.highlight?' highlight':''}">
+        <div class="rj-item-icon">${item.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="rj-item-title">${item.title}</div>
+          ${item.sub?`<div class="rj-item-sub">${item.sub}</div>`:''}
+        </div>
+        ${item.time?`<div class="rj-time-badge">${item.time}</div>`:''}
+      </div>`;
+    });
+    h += `</div>`;
+  });
+
+  document.getElementById('v-rj').innerHTML = h;
+}
+
 function goTab(t){
   curTab=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('nb-'+t).classList.add('active');
-  ['cal','ev','bd'].forEach(v=>{
+  ['cal','ev','bd','rj'].forEach(v=>{
     const el=document.getElementById('v-'+v);
     el.style.display='none';el.classList.remove('fade-in');
   });
   const el=document.getElementById('v-'+t);
   el.style.display=''; void el.offsetWidth; el.classList.add('fade-in');
-  const titles={cal:'Agenda',ev:'Eventos',bd:'Aniversários'};
+  const titles={cal:'Agenda',ev:'Eventos',bd:'Aniversários',rj:'GenZ no Rio'};
   document.getElementById('view-title').textContent=titles[t];
   document.getElementById('scroll').scrollTop=0;
   if(t==='cal') renderCal();
   else if(t==='ev') renderEv();
-  else renderBd();
+  else if(t==='bd') renderBd();
+  else renderRj();
 }
 
 /* ── Calendar export ── */
